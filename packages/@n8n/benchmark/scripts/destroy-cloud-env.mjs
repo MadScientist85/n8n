@@ -14,17 +14,26 @@ const RESOURCE_GROUP_NAME = 'n8n-benchmarking';
 
 const args = minimist(process.argv.slice(3), {
 	boolean: ['debug'],
+	string: ['cloud-provider'],
+	default: {
+		'cloud-provider': 'azure',
+	},
 });
 
 const isVerbose = !!args.debug;
+const cloudProvider = args['cloud-provider'];
 
 async function main() {
-	const terraformClient = new TerraformClient({ isVerbose });
+	const terraformClient = new TerraformClient({ isVerbose, cloudProvider });
 
 	if (terraformClient.hasTerraformState()) {
 		await terraformClient.destroyEnvironment();
-	} else {
+	} else if (cloudProvider === 'azure') {
 		await destroyUsingAz();
+	} else {
+		console.log('No Terraform state found. For OCI, resources must be destroyed using Terraform.');
+		console.log('Please ensure terraform.tfstate exists in the infra-oci directory.');
+		process.exit(1);
 	}
 }
 

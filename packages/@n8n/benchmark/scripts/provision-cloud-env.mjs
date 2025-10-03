@@ -10,22 +10,39 @@ import { TerraformClient } from './clients/terraform-client.mjs';
 
 const args = minimist(process.argv.slice(3), {
 	boolean: ['debug'],
+	string: ['cloud-provider'],
+	default: {
+		'cloud-provider': 'azure',
+	},
 });
 
 const isVerbose = !!args.debug;
+const cloudProvider = args['cloud-provider'];
 
 export async function provision() {
-	await ensureDependencies();
+	await ensureDependencies(cloudProvider);
 
 	const terraformClient = new TerraformClient({
 		isVerbose,
+		cloudProvider,
 	});
 
 	await terraformClient.provisionEnvironment();
 }
 
-async function ensureDependencies() {
+async function ensureDependencies(cloudProvider) {
 	await which('terraform');
+	
+	// Check for cloud-specific CLI tools
+	if (cloudProvider === 'oci') {
+		try {
+			await which('oci');
+		} catch (error) {
+			console.warn('Warning: OCI CLI not found. Make sure OCI credentials are configured via ~/.oci/config or environment variables.');
+		}
+	} else if (cloudProvider === 'azure') {
+		await which('az');
+	}
 }
 
 provision().catch((error) => {

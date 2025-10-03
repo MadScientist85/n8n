@@ -1,0 +1,27 @@
+#cloud-config
+# Cloud-init configuration for the benchmark VM
+
+# Update packages
+package_update: true
+package_upgrade: true
+
+# Install required packages
+packages:
+  - git
+  - curl
+  - wget
+  - ca-certificates
+  - gnupg
+  - lsb-release
+
+# Create benchmark user
+users:
+  - name: benchmark
+    groups: sudo
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+# Final message
+final_message: "Cloud-init setup completed. System is ready."

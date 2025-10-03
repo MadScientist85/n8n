@@ -40,6 +40,7 @@ async function main() {
 			n8nSetupsToUse,
 			vus: config.vus,
 			duration: config.duration,
+			cloudProvider: config.cloudProvider,
 		});
 	} else if (config.env === 'local') {
 		await runLocally({
@@ -82,12 +83,17 @@ function readAvailableN8nSetups() {
  * @property {string} [runDir]
  * @property {string} [vus]
  * @property {string} [duration]
+ * @property {string} [cloudProvider]
  *
  * @returns {Promise<Config>}
  */
 async function parseAndValidateConfig() {
 	const args = minimist(process.argv.slice(3), {
 		boolean: ['debug', 'help'],
+		string: ['cloud-provider'],
+		default: {
+			'cloud-provider': 'azure',
+		},
 	});
 
 	if (args.help) {
@@ -109,6 +115,7 @@ async function parseAndValidateConfig() {
 	const env = args.env || 'local';
 	const vus = args.vus;
 	const duration = args.duration;
+	const cloudProvider = args['cloud-provider'];
 
 	if (!env) {
 		printUsage();
@@ -128,6 +135,7 @@ async function parseAndValidateConfig() {
 		runDir,
 		vus,
 		duration,
+		cloudProvider,
 	};
 }
 
@@ -163,6 +171,9 @@ function printUsage() {
 	);
 	console.log(
 		'  --env                Env where to run the benchmarks. Either cloud or local. Default is local.',
+	);
+	console.log(
+		'  --cloud-provider     Cloud provider to use (azure or oci). Default is azure. Only applies when --env=cloud.',
 	);
 	console.log('  --debug              Enable verbose output');
 	console.log('  --n8nTag             Docker tag for n8n image. Default is latest');

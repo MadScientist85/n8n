@@ -35,14 +35,17 @@ import { flagsObjectToCliArgs } from './utils/flags.mjs';
  * @property {string} [n8nLicenseCert]
  * @property {string} [vus]
  * @property {string} [duration]
+ * @property {string} [cloudProvider]
  *
  * @param {Config} config
  */
 export async function runInCloud(config) {
-	await ensureDependencies();
+	const cloudProvider = config.cloudProvider || 'azure';
+	await ensureDependencies(cloudProvider);
 
 	const terraformClient = new TerraformClient({
 		isVerbose: config.isVerbose,
+		cloudProvider,
 	});
 
 	const benchmarkEnv = await terraformClient.getTerraformOutputs();
@@ -50,9 +53,19 @@ export async function runInCloud(config) {
 	await runBenchmarksOnVm(config, benchmarkEnv);
 }
 
-async function ensureDependencies() {
+async function ensureDependencies(cloudProvider) {
 	await which('terraform');
-	await which('az');
+	
+	// Check for cloud-specific CLI tools
+	if (cloudProvider === 'oci') {
+		try {
+			await which('oci');
+		} catch (error) {
+			console.warn('Warning: OCI CLI not found. Make sure OCI credentials are configured via ~/.oci/config or environment variables.');
+		}
+	} else if (cloudProvider === 'azure') {
+		await which('az');
+	}
 }
 
 /**

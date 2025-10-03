@@ -2,6 +2,10 @@
 
 Tool for executing benchmarks against an n8n instance.
 
+## Quick Start for Oracle Cloud
+
+Want to deploy to Oracle Cloud? Check out [ORACLE_CLOUD_SETUP.md](./ORACLE_CLOUD_SETUP.md) for a complete step-by-step guide.
+
 ## Directory structure
 
 ```text
@@ -10,6 +14,8 @@ packages/@n8n/benchmark
 ├── src              Source code for the n8n-benchmark cli
 ├── Dockerfile       Dockerfile for the n8n-benchmark cli
 ├── scripts          Orchestration scripts
+├── infra            Azure infrastructure (Terraform)
+├── infra-oci        Oracle Cloud Infrastructure (Terraform)
 ```
 
 ## Benchmarking an existing n8n instance
@@ -57,9 +63,21 @@ pnpm benchmark-locally
 
 ### In the cloud
 
+The benchmark suite supports deployment to both Azure and Oracle Cloud Infrastructure (OCI).
+
+#### Azure (default)
+
 ```sh
 pnpm benchmark-in-cloud
 ```
+
+#### Oracle Cloud Infrastructure (OCI)
+
+```sh
+pnpm benchmark-in-cloud --cloud-provider=oci
+```
+
+For detailed OCI setup instructions, see [infra-oci/README.md](./infra-oci/README.md).
 
 ## Running the `n8n-benchmark` cli
 
@@ -113,3 +131,40 @@ Available scenarios are located in [`./scenarios`](./scenarios/).
 ## n8n setups
 
 A n8n setup defines a single n8n runtime configuration using Docker compose. Different n8n setups are located in [`./scripts/n8nSetups`](./scripts/n8nSetups).
+
+## Cloud deployment
+
+The benchmark tool supports deployment to multiple cloud providers:
+
+- **Azure**: Uses the `infra/` directory (default)
+- **Oracle Cloud Infrastructure (OCI)**: Uses the `infra-oci/` directory
+
+### Provisioning cloud environments
+
+#### Azure
+
+```sh
+pnpm provision-cloud-env
+```
+
+#### Oracle Cloud Infrastructure
+
+```sh
+pnpm provision-cloud-env --cloud-provider=oci
+```
+
+See [infra-oci/README.md](./infra-oci/README.md) for OCI-specific setup instructions.
+
+### Destroying cloud environments
+
+#### Azure
+
+```sh
+pnpm destroy-cloud-env
+```
+
+#### Oracle Cloud Infrastructure
+
+```sh
+pnpm destroy-cloud-env --cloud-provider=oci
+```
