@@ -7,6 +7,8 @@ import { resolveFromRoot } from '../utils/path-helper';
 import { CredentialModal } from './components/CredentialModal';
 import { FocusPanel } from './components/FocusPanel';
 import { LogsPanel } from './components/LogsPanel';
+import { NodeCreator } from './components/NodeCreator';
+import { SaveChangesModal } from './components/SaveChangesModal';
 import { StickyComponent } from './components/StickyComponent';
 
 export class CanvasPage extends BasePage {
@@ -14,6 +16,8 @@ export class CanvasPage extends BasePage {
 	readonly logsPanel = new LogsPanel(this.page.getByTestId('logs-panel'));
 	readonly focusPanel = new FocusPanel(this.page.getByTestId('focus-panel'));
 	readonly credentialModal = new CredentialModal(this.page.getByTestId('editCredential-modal'));
+	readonly nodeCreator = new NodeCreator(this.page);
+	readonly saveChangesModal = new SaveChangesModal(this.page.locator('.el-overlay'));
 
 	saveWorkflowButton(): Locator {
 		return this.page.getByRole('button', { name: 'Save' });
@@ -333,6 +337,14 @@ export class CanvasPage extends BasePage {
 		return this.page.getByTestId('workflow-save-button');
 	}
 
+	/**
+	 * Get the "Set up template" button that appears when credential setup is incomplete
+	 * @returns Locator for the setup workflow credentials button
+	 */
+	getSetupWorkflowCredentialsButton(): Locator {
+		return this.page.getByRole('button', { name: 'Set up template' });
+	}
+
 	// Production Checklist methods
 	getProductionChecklistButton(): Locator {
 		return this.page.getByTestId('suggested-action-count');
@@ -387,6 +399,10 @@ export class CanvasPage extends BasePage {
 		return this.page.locator('[data-test-id="edge"]');
 	}
 
+	getConnectionBetweenNodes(sourceNodeName: string, targetNodeName: string): Locator {
+		return this.connectionBetweenNodes(sourceNodeName, targetNodeName);
+	}
+
 	canvasNodePlusEndpointByName(nodeName: string): Locator {
 		return this.page
 			.locator(
@@ -438,6 +454,10 @@ export class CanvasPage extends BasePage {
 		return this.page.getByTestId('toggle-focus-panel-button');
 	}
 
+	stopExecutionButton(): Locator {
+		return this.page.getByTestId('stop-execution-button');
+	}
+
 	// Actions
 
 	async addInitialNodeToCanvas(nodeName: string): Promise<void> {
@@ -456,6 +476,8 @@ export class CanvasPage extends BasePage {
 	}
 
 	async selectAll(): Promise<void> {
+		// Establish proper selection context first
+		await this.getCanvasNodes().first().click();
 		await this.page.keyboard.press('ControlOrMeta+a');
 	}
 
@@ -735,5 +757,68 @@ export class CanvasPage extends BasePage {
 
 	getNodeWarningStatusIndicator(nodeName: string): Locator {
 		return this.nodeByName(nodeName).getByTestId('canvas-node-status-warning');
+	}
+
+	getCanvasPlusButton(): Locator {
+		return this.page.getByTestId('canvas-plus-button');
+	}
+
+	async hitUndo(): Promise<void> {
+		await this.page.keyboard.press('ControlOrMeta+z');
+	}
+
+	async hitRedo(): Promise<void> {
+		await this.page.keyboard.press('ControlOrMeta+Shift+z');
+	}
+
+	async hitPaste(): Promise<void> {
+		await this.page.keyboard.press('ControlOrMeta+V');
+	}
+
+	async getNodePosition(nodeName: string): Promise<{ x: number; y: number }> {
+		const node = this.nodeByName(nodeName);
+		const boundingBox = await node.boundingBox();
+		if (!boundingBox) throw new Error(`Node ${nodeName} not found or not visible`);
+		return { x: boundingBox.x, y: boundingBox.y };
+	}
+
+	async dragNodeToRelativePosition(
+		nodeName: string,
+		deltaX: number,
+		deltaY: number,
+	): Promise<void> {
+		const node = this.nodeByName(nodeName);
+		const currentBox = await node.boundingBox();
+		if (!currentBox) throw new Error(`Node ${nodeName} not found`);
+
+		// Calculate center of node for drag start
+		const startX = currentBox.x + currentBox.width / 2;
+		const startY = currentBox.y + currentBox.height / 2;
+
+		// Use mouse events for precise control
+		await this.page.mouse.move(startX, startY);
+		await this.page.mouse.down();
+		await this.page.mouse.move(startX + deltaX, startY + deltaY, { steps: 10 });
+		await this.page.mouse.up();
+	}
+
+	async deleteNodeFromContextMenu(nodeName: string): Promise<void> {
+		await this.nodeByName(nodeName).click({ button: 'right' });
+		await this.page.getByTestId('context-menu').getByText('Delete').click();
+	}
+
+	async hitDeleteAllNodes(): Promise<void> {
+		await this.selectAll();
+		await this.page.keyboard.press('Backspace');
+	}
+
+	getNodeInputHandles(nodeName: string): Locator {
+		return this.page.locator(
+			`[data-test-id="canvas-node-input-handle"][data-node-name="${nodeName}"]`,
+		);
+	}
+
+	getWorkflowName(): Locator {
+		return this.page.getByTestId('workflow-name-input');
 	}
 }
