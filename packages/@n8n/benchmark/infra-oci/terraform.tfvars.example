@@ -1,0 +1,23 @@
+# Oracle Cloud Infrastructure Configuration
+# Copy this file to terraform.tfvars and fill in your values
+
+# Required: OCID of the compartment where resources will be created
+compartment_ocid = "ocid1.compartment.oc1..aaaaaaaa..."
+
+# Optional: OCI region (default: us-ashburn-1)
+# region = "us-ashburn-1"
+
+# Optional: Availability domain (if not specified, first AD will be used)
+# availability_domain = "AD-1"
+
+# Optional: Instance shape (default: VM.Standard.E4.Flex)
+# instance_shape = "VM.Standard.E4.Flex"
+
+# Optional: Number of OCPUs (default: 8)
+# instance_ocpus = 8
+
+# Optional: Memory in GB (default: 32)
+# instance_memory_in_gbs = 32
+
+# Optional: Boot volume size in GB (default: 100)
+# instance_boot_volume_size_in_gbs = 100
