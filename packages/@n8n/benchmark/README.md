@@ -2,6 +2,10 @@
 
 Tool for executing benchmarks against an n8n instance.
 
+## Quick Start for Oracle Cloud
+
+Want to deploy to Oracle Cloud? Check out [ORACLE_CLOUD_SETUP.md](./ORACLE_CLOUD_SETUP.md) for a complete step-by-step guide.
+
 ## Directory structure
 
 ```text
@@ -10,6 +14,8 @@ packages/@n8n/benchmark
 ├── src              Source code for the n8n-benchmark cli
 ├── Dockerfile       Dockerfile for the n8n-benchmark cli
 ├── scripts          Orchestration scripts
+├── infra            Azure infrastructure (Terraform)
+├── infra-oci        Oracle Cloud Infrastructure (Terraform)
 ```
 
 ## Benchmarking an existing n8n instance
