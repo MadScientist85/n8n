@@ -53,7 +53,7 @@ const TemplatesCollectionView = async () =>
 const TemplatesWorkflowView = async () =>
 	await import('@/features/templates/views/TemplatesWorkflowView.vue');
 const SetupWorkflowFromTemplateView = async () =>
-	await import('@/views/SetupWorkflowFromTemplateView/SetupWorkflowFromTemplateView.vue');
+	await import('@/features/templates/views/SetupWorkflowFromTemplateView.vue');
 const TemplatesSearchView = async () =>
 	await import('@/features/templates/views/TemplatesSearchView.vue');
 const VariablesView = async () => await import('@/views/VariablesView.vue');
@@ -62,7 +62,8 @@ const SettingsSso = async () => await import('./views/SettingsSso.vue');
 const SignoutView = async () => await import('@/views/SignoutView.vue');
 const SamlOnboarding = async () => await import('@/views/SamlOnboarding.vue');
 const SettingsSourceControl = async () => await import('./views/SettingsSourceControl.vue');
-const SettingsExternalSecrets = async () => await import('./views/SettingsExternalSecrets.vue');
+const SettingsExternalSecrets = async () =>
+	await import('@/features/externalSecrets/views/SettingsExternalSecrets.vue');
 const WorkerView = async () => await import('./views/WorkerView.vue');
 const WorkflowHistory = async () => await import('@/views/WorkflowHistory.vue');
 const WorkflowOnboardingView = async () => await import('@/views/WorkflowOnboardingView.vue');
