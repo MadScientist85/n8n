@@ -228,7 +228,7 @@
     "ignore": "^5.2.0",
     "js-tiktoken": "^1.0.12",
     "jsdom": "23.0.1",
-    "langchain": "0.3.33",
+    "langchain": "0.3.37",
     "lodash": "catalog:",
     "mammoth": "1.11.0",
     "mime-types": "catalog:",
