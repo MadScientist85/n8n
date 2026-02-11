@@ -7,7 +7,7 @@ packages:
 
 catalog:
   '@langchain/anthropic': 0.3.26
-  '@langchain/community': 0.3.50
+  '@langchain/community': 1.1.14
   '@langchain/core': 0.3.68
   '@langchain/openai': 0.6.16
   '@n8n/typeorm': 0.3.20-15
